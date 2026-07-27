@@ -40,7 +40,12 @@ RUN pip install git+https://github.com/ISEEKYAN/mbridge.git@89eb10887887bc74853f
 RUN pip install flash-linear-attention==0.4.2
 # FlashQLA: optional GDN backend for Qwen3.5/Qwen3-Next (--qwen-gdn-backend flashqla; requires SM90+)
 RUN pip install git+https://github.com/QwenLM/FlashQLA.git --no-build-isolation
-RUN pip install tilelang -f https://tile-ai.github.io/whl/nightly/cu128/
+# tilelang < 0.1.12 miscompiles the GLM-5 sparse-MLA backward kernel: its
+# MergeSharedMemoryAllocations pass (TL_ENABLE_AGGRESSIVE_SHARED_MEMORY_MERGE,
+# which the kernel enables) aliases shared buffers whose lifetimes overlap and
+# silently yields NaN dQ/dKV. The nightly index lags PyPI, so pin a lower bound
+# explicitly -- an unpinned install here resolves to 0.1.9 and trains to NaN.
+RUN pip install "tilelang>=0.1.12" -f https://tile-ai.github.io/whl/nightly/cu128/
 
 # TE does not have wheel on cuda 13 yet, thus need to install from source
 RUN if [ "${ENABLE_CUDA_13}" = "1" ]; then \
