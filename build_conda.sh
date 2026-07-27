@@ -118,8 +118,9 @@ pip install git+https://github.com/ISEEKYAN/mbridge.git@89eb10887887bc74853f89a4
 pip install flash-linear-attention==0.4.1
 # FlashQLA: optional GDN backend for Qwen3.5/Qwen3-Next (--qwen-gdn-backend flashqla; requires SM90+)
 pip install git+https://github.com/QwenLM/FlashQLA.git --no-build-isolation
-# tilelang (matches Dockerfile)
-pip install tilelang -f https://tile-ai.github.io/whl/nightly/cu128/
+# tilelang (matches Dockerfile); < 0.1.12 miscompiles the GLM-5 sparse-MLA
+# backward kernel into NaN gradients, and the nightly index lags PyPI.
+pip install "tilelang>=0.1.12" -f https://tile-ai.github.io/whl/nightly/cu128/
 
 pip install --no-build-isolation "transformer_engine[pytorch]==2.10.0"
 
